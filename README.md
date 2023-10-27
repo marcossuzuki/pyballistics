@@ -129,13 +129,13 @@ O dicionário de entrada consiste nos seguintes elementos de “nível superior�
     - ```'f_ign'```(*opcional*) - força do dispositivo de ignição, J/kg (*valor padrão 260.000 J/kg*).
     - ```'b_ign'```(*opcional*) - covolume de gases de ignição, m^3/kg (*valor padrão 0,0006*).
   - ```'windage'``` - **seção opcional**. Esta seção armazena um dicionário com dados iniciais relacionados à força de resistência do ar na frente do projétil. Se você não especificar este elemento, os valores padrão serão usados. O dicionário possui os seguintes elementos:
-    - ```'shock_wave'```(*optional*) - sinalizador ```True/False```, indicando se a pressão da onda de choque deve ser calculada usando a fórmula, ou apenas usar a pressão estática ```'p_0a '`` ` (*valor padrão ```Verdadeiro```*).
+    - ```'shock_wave'```(*optional*) - sinalizador ```True/False```, indicando se a pressão da onda de choque deve ser calculada usando a fórmula, ou apenas usar a pressão estática ```'p_0a '``` (*valor padrão ```True```*).
     - ```'p_0a'```(*opcional*) - pressão do ar na frente do projétil, Pa (*valor padrão 100.000*).
     - ```'k_air'```(*opcional*) - índice adiabático do ar (*valor padrão 1,4*).
     - ```'c_0a'```(*opcional*) - velocidade do som no ar, m/s (*valor padrão 340*).
 - ```'heat'``` - **seção opcional**. Esta seção armazena um dicionário com dados iniciais relativos à troca de calor da bomba hidráulica com o barril. Se você não especificar este elemento, todos os valores padrão serão usados. O dicionário possui os seguintes elementos:
-    - ```'enabled'```(*optional*) - flag ```True/False```, indicando se a troca de calor com o barril deve ser levada em consideração (*valor padrão ```True``` *).
-    - ```'heat_barrel'```(*optional*) - flag ```True/False```, indicando se é necessário levar em conta o cálculo dinâmico da temperatura da parede do barril, ou se o a temperatura das paredes do barril não muda (*valor padrão `` `True```*).
+    - ```'enabled'```(*optional*) - flag ```True/False```, indicando se a troca de calor com o barril deve ser levada em consideração (*valor padrão ```True```*).
+    - ```'heat_barrel'```(*optional*) - flag ```True/False```, indicando se é necessário levar em conta o cálculo dinâmico da temperatura da parede do barril, ou se o a temperatura das paredes do barril não muda (*valor padrão ```True```*).
     - ```'F_0'```(*opcional*) - área inicial de transferência de calor, m^2 (*valor padrão 4W_0/d*).
     - ```'Pr'```(*opcional*) - Número Prandl (*valor padrão 0,74*).
     - ```'T_w0'```(*opcional*) - temperatura inicial da parede, K. Se não for especificada, então a temperatura inicial será medida.
