@@ -1,65 +1,64 @@
 # PyBallistics
-Python-библиотека для решения ОЗВБ в термодинамической и газодинамической постановках. 
+Biblioteca Python para resolver o OZVB em formulações termodinâmicas e gasodinâmicas.
 
 ## Установка
-Установить библиотеку можно через менеджер пакетов [pip](https://ru.wikipedia.org/wiki/Pip_(%D0%BC%D0%B5%D0%BD%D0%B5%D0%B4%D0%B6%D0%B5%D1%80_%D0%BF%D0%B0%D0%BA%D0%B5%D1%82%D0%BE%D0%B2)). Для этого достаточно выполнить в консоли команду
+Você pode instalar a biblioteca através do gerenciador de pacotes [pip](https://en.wikipedia.org/wiki/Pip_(package_manager)). Para fazer isso, basta executar o comando no console
 
 ```
 pip install --upgrade pyballistics
 ```
 
-## Краткая инструкция по использованию
+## Breves instruções de uso
 
-Пример расчета ОЗВБ в термодинамической постановке задачи AGARD:
+Um exemplo de cálculo do OZVB na formulação termodinâmica do problema AGARD:
 
 ```python
 from pyballistics import ozvb_termo, get_options_agard
 
-opts = get_options_agard() # получить словарь с начальными данными задачи AGARD
-result = ozvb_termo(opts)  # произвести расчет и получить результат
+opts = get_options_agard() # obtenha um dicionário com os dados iniciais da tarefa AGARD
+result = ozvb_termo(opts)  # faça cálculos e obtenha o resultado
 ```
-Переменная ```result``` является [словарем](https://pythonworld.ru/tipy-dannyx-v-python/slovari-dict-funkcii-i-metody-slovarej.html), в котором находятся результаты расчета.
-Для визуализации части результатов можно воспользоваться следующим кодом:
+A variável ```result``` é um [dicionário](https://pythonworld.ru/tipy-dannyx-v-python/slovari-dict-funkcii-i-metody-slovarej.html), que contém o cálculo resultados.
 
 ```python
-import matplotlib.pyplot as plt # если нет библиотеки matplotlib, то установить ее можно при помощи команды pip install matplotlib
+import matplotlib.pyplot as plt # se não houver biblioteca matplotlib, você pode instalá-la usando o comando pip install matplotlib
 
-plt.plot(result['t'], result['p_m']) # среднебаллистическое давление от времени
-plt.grid()  # сетка на графике
-plt.show()  # показать график
+plt.plot(result['t'], result['p_m']) # pressão balística média versus tempo
+plt.grid()  # grade no gráfico
+plt.show()  # mostra gráfico
 ```
 
-В результате будет получен следующий график зависимости среднебаллистического давления (Па) от времени (с):
+Como resultado, será obtido o seguinte gráfico da dependência da pressão balística média (Pa) em relação ao tempo (s):
 ![](imgs/1.png)
 
-В словаре ```result``` есть все необходимые данные для дальнейшего анализа:
+O dicionário ```result``` contém todos os dados necessários para análise posterior:
 
 ```python
 import numpy as np 
 
-# максимальное давление
+# pressão máxima
 print(np.max(result['p_m']))
 >>> 319103989.57
 
-# дульная скорость
+# velocidade inicial
 print(result['v_p'][-1])
 >>> 671.16
 
-# доля сгоревшего пороха
+# parcela de pólvora queimada
 print(result['psi_1'][-1])
 >>> 0.932
 ```
 
-## Более подробная инструкция
+## Instruções mais detalhadas
 
-За сами расчеты ОЗВБ отвечают две функции: ```ozvb_termo``` и ```ozvb_lagrange```. Они могут быть импортированы непосредственно из библиотеки:
+Duas funções são responsáveis ​​pelos cálculos do OZVB: ```ozvb_termo``` e ```ozvb_lagrange```. Eles podem ser importados diretamente da biblioteca:
 
 ```python
 from pyballistics import ozvb_termo, ozvb_lagrange
 ```
-Функция ```ozvb_termo``` производит термодинамический расчет, а ```ozvb_lagrange``` - газодинамический в Лагранжевых координатах. 
+A função ```ozvb_termo``` realiza cálculos termodinâmicos, e ```ozvb_lagrange``` realiza cálculos gasodinâmicos em coordenadas Lagrangianas.
 
-Обе эти функции на вход принимают словари, в которых хранятся все необходимые для расчета начальные данные. Примеры таких словарей можно получить из функций ```get_options_agard``` и ```get_options_sample```:
+Ambas as funções tomam como entrada dicionários, que armazenam todos os dados iniciais necessários para o cálculo. Exemplos de tais dicionários podem ser obtidos nas funções ```get_options_agard``` e ```get_options_sample```:
 
 ```python
 from pyballistics import get_options_agard, get_options_sample
@@ -92,126 +91,126 @@ print(opts2)
 #       'x_p': 9}
 # }
 ```
-Словарь со входными данными является иерархической структурой данных (словарь словарей, списков и т.д.). Для указания всех данных, однозначно описывающих задачу ОЗВБ, словарь должен быть довольно громоздким и неудобным для формирования. Для упрощения формирования словаря многие входящие в него элементы имеют значения по умолчанию и их, в случае необходимости, можно не указывать. Однако есть ряд элементов и значений, которые указывать обязательно. 
-Словарь со входными данными состоит из следующих элементов "верхнего уровня":
- - ```'init_conditions'``` - **обязательный раздел**. В данном разделе хранится словарь с начальными данными:
-   - ```'q'``` - масса снаряда в кг.
-   - ```'d'``` - калибр, м.
-   - ```'W_0'``` - начальный объем каморы, м^3.
-   - ```'phi_1'``` - коэффициент, учитывающий силу трения в нарезах (участвует в формуле расчета коэффициента фиктивности массы снаряда).
-   - ```'p_0'``` - давление форсирования, Па.
-   - ```'T_0'```(*опционально*) - начальная температура, К (*значение по умолчанию 293.15 К*).
-   - ```'n_S'```(*опционально*) - коэффициент учета площади нарезов (*значение по умолчанию 1). Площадь поперечного сечения высчитывается по формуле S = n_S pi d^2 / 4 .
+Um dicionário com dados de entrada é uma estrutura de dados hierárquica (dicionário de dicionários, listas, etc.). Para indicar todos os dados que descrevem de forma inequívoca a tarefa da gestão da segurança e saúde no trabalho, o dicionário deve ser bastante complicado e inconveniente de formar. Para simplificar a formação do dicionário, muitos dos elementos nele incluídos possuem valores padrão e, se necessário, podem ser omitidos. No entanto, existem vários elementos e valores que devem ser especificados.
+O dicionário de entrada consiste nos seguintes elementos de “nível superior”:
+ - ```'init_conditions'``` - **seção obrigatória**. Esta seção armazena um dicionário com dados iniciais:
+    - ```'q'``` - massa do projétil em kg.
+    - ```'d'``` - calibre, m.
+    - ```'W_0'``` - volume inicial da câmara, m^3.
+    - ```'phi_1'``` - coeficiente que leva em consideração a força de atrito no rifle (participa da fórmula de cálculo do coeficiente de massa fictícia do projétil).
+    - ```'p_0'``` - pressão de reforço, Pa.
+    - ```'T_0'```(*opcional*) - temperatura inicial, K (*valor padrão 293,15 K*).
+    - ```'n_S'```(*opcional*) - coeficiente para levar em consideração a área de estrias (*valor padrão 1). A área da seção transversal é calculada usando a fórmula S = n_S pi d^2/4.
     
 
- - ```'powders'``` - **обязательный раздел**. В данном разделе хранится [список](https://pythonworld.ru/tipy-dannyx-v-python/spiski-list-funkcii-i-metody-spiskov.html) с данными по пороховым навескам, из которых состоит метательный заряд. **Обязательно должен иметь хотя бы один элемент**. Каждый элемент списка отвечает за свою навеску и тоже является словарем со следующими элементами:
-   - ```'omega'``` - масса навески заряда, кг.
-   - ```'dbname'```(*опционально*) - имя пороха в БД. **Если указать, то для остальных элементов будут определены значения по умолчанию. Если не указать, то все остальные элементы будет необходимо инициализировать** (список доступных имен можно получить из функции ```get_powder_names```). Т.е. при желании можно корректировать часть характеристик табличных порохов и брать у них остальные значения стандартными.
-   - ```'I_e'```(*опционально, если указан ```'dbname'```*) - импульс конца горения, Па с.
-   - ```'nu'``` (*опционально, если указан ```'dbname'```*) - показатель в степенном законе горения (*по умолчанию 1*).
-   - ```'b'```(*опционально, если указан ```'dbname'```*) - коволюм пороховых газов, м^3/кг.
-   - ```'delta'```(*опционально, если указан ```'dbname'```*) - плотность пороха, кг/м^3.
-   - ```'f'```(*опционально, если указан ```'dbname'```*) - сила пороха, Дж/кг.
-   - ```'k'```(*опционально, если указан ```'dbname'```*) - коэффициент адиабаты пороховых газов.
-   - ```'T_p'```(*опционально, если указан ```'dbname'```*) - темп. горения пороха, К.
-   - ```'z_e'```(*опционально, если указан ```'dbname'```*) - относительная толщина сгоревшего слоя конца горения.
-   - ```'kappa_1'```(*опционально, если указан ```'dbname'```*) - коэффициент в геометрическом законе горения.
-   - ```'lambda_1'```(*опционально, если указан ```'dbname'```*) - коэффициент в геометрическом законе горения.
-   - ```'mu_1'```(*опционально, если указан ```'dbname'```*) - коэффициент в геометрическом законе горения.
-   - ```'kappa_2'```(*опционально, если указан ```'dbname'```*) - коэффициент в геометрическом законе горения.
-   - ```'lambda_2'```(*опционально, если указан ```'dbname'```*) - коэффициент в геометрическом законе горения.
-   - ```'mu_2'```(*опционально, если указан ```'dbname'```*) - коэффициент в геометрическом законе горения.
-   - ```'k_I'```(*опционально, если указан ```'dbname'```*) - коэффициент для пересчета импульса конца горения для других начальных температур, 1/K.
-   - ```'k_f'```(*опционально, если указан ```'dbname'```*) - коэффициент для пересчета силы пороха для других начальных температур, 1/K.
- - ```'igniter'``` - **обязательный раздел**. В данном разделе хранится словарь с начальными данными, которые относятся к воспламенителю. Словарь имеет следующие элементы:
-   - ```'p_ign_0'``` - давление вспышки, Па.
-   - ```'k_ign'```(*опционально*) - коэффициент адиабаты газов воспламенителя (*значение по умолчанию 1.22*).
-   - ```'T_ign'```(*опционально*) - температура горения воспламенителя, К (*значение по умолчанию 2427*).
-   - ```'f_ign'```(*опционально*) - сила воспламенителя, Дж/кг (*значение по умолчанию 260 000 Дж/кг*).
-   - ```'b_ign'```(*опционально*) - коволюм газов воспламенителя, м^3/кг (*значение по умолчанию 0.0006*).
- - ```'windage'``` - **опциональный раздел**. В данном разделе хранится словарь с начальными данными, которые относятся к силе сопротивления воздуха перед снарядом. Если не указывать этот элемент, то будут использованы значения по умолчанию. Словарь имеет следующие элементы:
-   - ```'shock_wave'```(*опционально*) - флаг ```True/False```, показывающий нужно ли рассчитывать давление ударной волны по формуле, или использовать просто статичное давление ```'p_0a'``` (*значение по умолчанию ```True```*).
-   - ```'p_0a'```(*опционально*) - давление воздуха перед снарядом, Па (*значение по умолчанию 100 000*).
-   - ```'k_air'```(*опционально*) - показатель адиабаты воздуха (*значение по умолчанию 1.4*).
-   - ```'c_0a'```(*опционально*) - скорость звука в воздухе, м/с (*значение по умолчанию 340*).
- - ```'heat'``` - **опциональный раздел**. В данном разделе хранится словарь с начальными данными, которые относятся к теплообмену ГПС со стволом. Если не указывать этот элемент, то будут использованы все значения по умолчанию. Словарь имеет следующие элементы:
-   - ```'enabled'```(*опционально*) - флаг ```True/False```, показывающий нужно ли учитывать теплообмен со стволом (*значение по умолчанию ```True```*).
-   - ```'heat_barrel'```(*опционально*) - флаг ```True/False```, показывающий нужно ли учитывать рассчитвать динамически температуру стенки ствола, или температура стенок ствола не меняется (*значение по умолчанию ```True```*).
-   - ```'F_0'```(*опционально*) - начальная площадь теплоотдачи, м^2 (*значение по умолчанию 4W_0/d*).
-   - ```'Pr'```(*опционально*) - число Прандля (*значение по умолчанию 0.74*).
-   - ```'T_w0'```(*опционально*) - начальная температура стенки, К. Если не указывать - то будет взята начальная температура.
-   - ```'mu_0'```(*опционально*) - коэффициент динамической вязкости пороховых газов для формулы Сазерленда, Па*с (*значение по умолчанию 0.175e-4*).
-   - ```'T_cs'```(*опционально*) - тоже для формулы Сазерленда, К (*значение по умолчанию 628*).
-   - ```'T_0s'```(*опционально*) - тоже для формулы Сазерленда, К (*значение по умолчанию 273*).
-   - ```'c_b'```(*опционально*) - теплоемкость материала ствола, Дж/(кг * град) (*значение по умолчанию 500*).
-   - ```'rho_b'```(*опционально*) - плотность материала ствола, кг/м^3 (*значение по умолчанию 7900*).
-   - ```'lambda_b'```(*опционально*) - теплопроводность материала ствола, Вт/(м·град) (*значение по умолчанию 40*).
-   - ```'lambda_g'```(*опционально*) - теплопроводность пороховых газов, Вт/(м·К) (*значение по умолчанию 0.2218*).
-- ```'stop_conditions'``` - **обязательный раздел**. В данном разделе хранится словарь с начальными данными, которые относятся к условиям конца расчета. **Должен иметь хотя бы один элемент** (любой из нижеперечисленных). Если указано несколько условий, то расчет будет остановлен из-за условия, которое сработало раньше всего. Словарь имеет следующие элементы:
-   - ```'t_max'```(*опционально*) - с, прервать расчет при t > t_max.
-   - ```'steps_max'```(*опционально*) - сделать максимум  steps_max шагов интегрирования.
-   - ```'v_p'```(*опционально*) - м/с, прервать расчет, когда скорость снаряда достигнет v_p.
-   - ```'x_p'```(*опционально*) - м, прервать расчет, когда снаряд пройдет x_p метров (в начальный момент снаряд прошел 0 м).
-   - ```'p_max'```(*опционально*) - Па, прервать расчет, если давление превысит p_max.
-- ```'meta_termo'``` - **обязательный раздел для термодинамического расчета**. В данном разделе хранится словарь с начальными данными, которые относятся к мета-параметрам термодинамического расчета. Словарь имеет следующие элементы:
-   - ```'dt'``` - с, шаг по времени.
-   - ```'method'```(*опционально*) - метод интегрирования. Возможные варианты: Эйлер - 'euler'; Рунге-Кутты 2 порядка -'rk2'; -  Рунге-Кутты 4 порядка - 'rk4' (*значение по умолчанию 'rk2'*).
-- ```'meta_lagrange'``` - **обязательный раздел для газодинамического расчета**. В данном разделе хранится словарь с начальными данными, которые относятся к мета-параметрам газодинамического расчета. Словарь имеет следующие элементы:
-   - ```'n_cells'``` - количество ячеек сетки.
-   - ```'CFL'``` - число Куранта (0 < CFL < 1).
-   - ```'W'```(*опционально*) - дополнительное требование для повышения устойчивости: последующий шаг по времени не может быть больше текущего в W раз.
+ - ```'powders'``` - **seção obrigatória**. Esta seção contém uma [lista](https://pythonworld.ru/tipy-dannyx-v-python/spiski-list-funkcii-i-metody-spiskov.html) com dados sobre as amostras de pólvora que compõem a carga do propelente . **Deve ter pelo menos um elemento**. Cada elemento da lista é responsável por seu próprio link e também é um dicionário com os seguintes elementos:
+    - ```'omega'``` - peso da carga, kg.
+    - ```'dbname'```(*opcional*) - o nome da pólvora no banco de dados. **Se especificado, serão definidos valores padrão para os demais elementos. Se não for especificado, então todos os outros elementos precisarão ser inicializados** (a lista de nomes disponíveis pode ser obtida na função ```get_powder_names```). Aqueles. Se desejar, você pode ajustar algumas características dos pós tabulares e tomar o restante dos valores como padrão.
+    - ```'I_e'```(*opcional se ```'dbname'```* for especificado) - impulso de fim de combustão, Pa s.
+    - ```'nu'``` (*opcional se ```'dbname'```* for especificado) - expoente na lei de potência de combustão (*padrão 1*).
+    - ```'b'```(*opcional se ```'dbname'```* for especificado) - covolume de gases em pó, m^3/kg.
+    - ```'delta'```(*opcional se ```'dbname'```* for especificado) - densidade do pó, kg/m^3.
+    - ```'f'```(*opcional se ```'dbname'```* for especificado) - força do pó, J/kg.
+    - ```'k'```(*opcional se ```'dbname'```* for especificado) - coeficiente adiabático de gases em pó.
+    - ```'T_p'```(*opcional se ```'dbname'```* for especificado) - temp. queima de pólvora, K.
+    - ```'z_e'```(*opcional se ```'dbname'```* for especificado) - a espessura relativa da camada queimada no final da combustão.
+    - ```'kappa_1'```(*opcional se ```'dbname'```* for especificado) - coeficiente na lei geométrica da combustão.
+    - ```'lambda_1'```(*opcional se ```'dbname'```* for especificado) - coeficiente na lei geométrica da combustão.
+    - ```'mu_1'```(*opcional se ```'dbname'```* for especificado) - coeficiente na lei geométrica da combustão.
+    - ```'kappa_2'```(*opcional se ```'dbname'```* for especificado) - coeficiente na lei geométrica da combustão.
+    - ```'lambda_2'```(*opcional se ```'dbname'```* for especificado) - coeficiente na lei geométrica da combustão.
+    - ```'mu_2'```(*opcional se ```'dbname'```* for especificado) - coeficiente na lei geométrica da combustão.
+    - ```'k_I'```(*opcional se ```'dbname'```* for especificado) - coeficiente de recálculo do impulso de fim de combustão para outras temperaturas iniciais, 1/K.
+    - ```'k_f'```(*opcional se ```'dbname'```* for especificado) - coeficiente para recálculo da força do pó para outras temperaturas iniciais, 1/K.
+- ```'igniter'``` - **seção obrigatória**. Esta seção armazena um dicionário com dados iniciais relacionados ao dispositivo de ignição. O dicionário possui os seguintes elementos:
+    - ```'p_ign_0'``` - pressão do flash, Pa.
+    - ```'k_ign'```(*opcional*) - coeficiente adiabático dos gases de ignição (*valor padrão 1,22*).
+    - ```'T_ign'```(*opcional*) - temperatura de combustão do ignitor, K (*valor padrão 2427*).
+    - ```'f_ign'```(*opcional*) - força do dispositivo de ignição, J/kg (*valor padrão 260.000 J/kg*).
+    - ```'b_ign'```(*opcional*) - covolume de gases de ignição, m^3/kg (*valor padrão 0,0006*).
+  - ```'windage'``` - **seção opcional**. Esta seção armazena um dicionário com dados iniciais relacionados à força de resistência do ar na frente do projétil. Se você não especificar este elemento, os valores padrão serão usados. O dicionário possui os seguintes elementos:
+    - ```'shock_wave'```(*optional*) - sinalizador ```True/False```, indicando se a pressão da onda de choque deve ser calculada usando a fórmula, ou apenas usar a pressão estática ```'p_0a '`` ` (*valor padrão ```Verdadeiro```*).
+    - ```'p_0a'```(*opcional*) - pressão do ar na frente do projétil, Pa (*valor padrão 100.000*).
+    - ```'k_air'```(*opcional*) - índice adiabático do ar (*valor padrão 1,4*).
+    - ```'c_0a'```(*opcional*) - velocidade do som no ar, m/s (*valor padrão 340*).
+- ```'heat'``` - **seção opcional**. Esta seção armazena um dicionário com dados iniciais relativos à troca de calor da bomba hidráulica com o barril. Se você não especificar este elemento, todos os valores padrão serão usados. O dicionário possui os seguintes elementos:
+    - ```'enabled'```(*optional*) - flag ```True/False```, indicando se a troca de calor com o barril deve ser levada em consideração (*valor padrão ```True``` *).
+    - ```'heat_barrel'```(*optional*) - flag ```True/False```, indicando se é necessário levar em conta o cálculo dinâmico da temperatura da parede do barril, ou se o a temperatura das paredes do barril não muda (*valor padrão `` `True```*).
+    - ```'F_0'```(*opcional*) - área inicial de transferência de calor, m^2 (*valor padrão 4W_0/d*).
+    - ```'Pr'```(*opcional*) - Número Prandl (*valor padrão 0,74*).
+    - ```'T_w0'```(*opcional*) - temperatura inicial da parede, K. Se não for especificada, então a temperatura inicial será medida.
+    - ```'mu_0'```(*opcional*) - coeficiente de viscosidade dinâmica dos gases em pó para a fórmula de Sutherland, Pa*s (*valor padrão 0,175e-4*).
+    - ```'T_cs'```(*opcional*) - também para a fórmula de Sutherland, K (*valor padrão 628*).
+    - ```'T_0s'```(*opcional*) - também para a fórmula de Sutherland, K (*valor padrão 273*).
+    - ```'c_b'```(*opcional*) - capacidade térmica do material do barril, J/(kg * deg) (*valor padrão 500*).
+    - ```'rho_b'```(*opcional*) - densidade do material do barril, kg/m^3 (*valor padrão 7900*).
+    - ```'lambda_b'```(*opcional*) - condutividade térmica do material do cano, W/(m graus) (*valor padrão 40*).
+    - ```'lambda_g'```(*opcional*) - condutividade térmica de gases em pó, W/(m K) (*valor padrão 0,2218*).
+- ```'stop_conditions'``` - **seção obrigatória**. Esta seção armazena um dicionário com dados iniciais relacionados às condições para o final do cálculo. **Deve ter pelo menos um elemento** (qualquer um dos seguintes). Se diversas condições forem especificadas, o cálculo será interrompido devido à condição que foi acionada primeiro. O dicionário possui os seguintes elementos:
+    - ```'t_max'```(*opcional*) - s, interrompe o cálculo quando t > t_max.
+    - ```'steps_max'```(*opcional*) - faça no máximo etapas de integração steps_max.
+    - ```'v_p'```(*opcional*) - m/s, interrompe o cálculo quando a velocidade do projétil atingir v_p.
+    - ```'x_p'```(*opcional*) - m, interrompe o cálculo quando o projétil tiver passado x_p metros (no momento inicial o projétil passou 0 m).
+    - ```'p_max'```(*opcional*) - Pa, interrompa o cálculo se a pressão ultrapassar p_max.
+- ```'meta_termo'``` - **seção obrigatória para cálculos termodinâmicos**. Esta seção armazena um dicionário com dados iniciais relacionados aos metaparâmetros do cálculo termodinâmico. O dicionário possui os seguintes elementos:
+    - ```'dt'``` - s, intervalo de tempo.
+    - ```'method'```(*opcional*) - método de integração. Opções possíveis: Euler - 'euler'; Runge-Kutty 2ª ordem -'rk2'; - Runge-Kutty 4ª ordem - 'rk4' (*valor padrão 'rk2'*).
+- ```'meta_lagrange'``` - **seção obrigatória para cálculos gasodinâmicos**. Esta seção armazena um dicionário com dados iniciais relacionados aos metaparâmetros do cálculo gasodinâmico. O dicionário possui os seguintes elementos:
+    - ```'n_cells'``` - número de células da grade.
+    - ```'CFL'``` - Número do Courant (0 < CFL < 1).
+    - ```'W'```(*opcional*) - requisito adicional para aumentar a estabilidade: o próximo passo de tempo não pode ser W vezes maior que o atual.
 
-## Структура результатов термодинамической модели
+## Estrutura dos resultados do modelo termodinâmico
 
-В зависимости от результатов расчета, словарь может быть двух видов. Если в результате расчета произошла ошибка, то будет сформирован следующий словарь:
+Dependendo dos resultados do cálculo, o dicionário pode ser de dois tipos. Caso ocorra algum erro no cálculo, será gerado o seguinte dicionário:
 
 ```python
 {
-    'stop_reason': 'error',   # показывает, что в процессе расчета произошла ошибка
-    'error_message': '...',   # описание ошибки
-    'exception': Error('...'),# ссылка на саму ошибку (ее можно вызвать при помощи raise для трассировки) 
-    'execution_time': float   # время выполнения функции в секундах
+     'stop_reason': 'error',    # indica que ocorreu um erro durante o processo de cálculo
+     'error_message': '...',    # descrição do erro
+     'exception': Error('...'), # referência ao próprio erro (pode ser levantado usando raise para rastrear)
+     'execution_time': float    # tempo de execução da função em segundos
 }
 ```
 
-Пример:
+Exemplo:
 
 ```python 
-result = ozvb_termo({})  # передаем пустой словарь
+result = ozvb_termo({})  #passa um dicionário vazio
 print(result)
 >>> {
     'stop_reason': 'error',
-    'error_message': 'В словаре opts обязательно должно быть поле "powders", в котором указываются параметры заряда. Пример правильного словаря opts можно получить из функции get_termo_options_sample()',
-    'exception': ValueError('В словаре opts обязательно должно быть поле "powders", в котором указываются параметры заряда. Пример правильного словаря opts можно получить из функции get_termo_options_sample()'),
+    'error_message': 'O dicionário opts deve ter um campo "powders", que especifica os parâmetros a carregar. Um exemplo de dicionário de opções correto pode ser obtido na função get_termo_options_sample()',
+    'exception': ValueError('O dicionário de opções deve ter um campo "powders", que especifica os parâmetros de cobrança. Um exemplo de dicionário de opções correto pode ser obtido na função get_termo_options_sample()'),
     'execution_time': 1.7400000047018693e-05
 }
 ```
 
-Если расчет прошел без ошибок, то словарь с результатами будет следующий:
+Se o cálculo ocorreu sem erros, o dicionário com os resultados serão o seguinte:
 
 ```python
 {
-    't': np.array([...]),     # numpy-массив с точками по времени в секундах, в которых были рассчитаны остальные значения 
-    'p_m': np.array([...]),   # numpy-массив со среднебаллистическим давлением в Па
-    'T': np.array([...]),     # numpy-массив с температурой ГПС в Кельвинах
-    'x_p':np.array([...]),    # numpy-массив с положением снаряда в метрах (в начальный момент x_p==0)
-    'v_p': np.array([...]),   # numpy-массив со скоростью снаряда в м/c (в начальный момент v_p==0)
-    'Q_pa': np.array([...]),  # numpy-массив с суммарной энергией в Дж, потраченной на преодоление сил сопротивления атмосферному давлению перед снарядом
-    'Q_w': np.array([...]),   # numpy-массив с суммарной энергией в Дж, отданной  ГПС на нагрев ствола
-    'W_p': np.array([...]),   # numpy-массив с заснарядным объемом в м^3
-    'W_c': np.array([...]),   # numpy-массив с объемом в м^3, занятым коволюмом ГПС и конденсированной фазой ГПС
-    'T_w': np.array([...]),   # numpy-массив со средней температурой ствола в К
-    'k': np.array([...]),     # numpy-массив с показателями адиабаты ГПС
-    'z_1': np.array([...]),   # numpy-массив с относительной толщиной сгоревшего свода пороха навески №1
-    'psi_1': np.array([...]), # numpy-массив с относительной массой сгоревшего пороха навески №1
-    'z_2': np.array([...]),   # numpy-массив с относительной толщиной сгоревшего свода пороха навески №2
-    'psi_2': np.array([...]), # numpy-массив с относительной массой сгоревшего пороха навески №2
-        ...                   # и так N раз
-    'stop_reason': str,       # причина остановки расчета ('t_max', 'steps_max', 'v_p', 'x_p', 'p_max')
-    'execution_time': float   # время, потраченное на расчет, в секундах
+     't': np.array([...]),      # array numpy com pontos de tempo em segundos em que os valores restantes foram calculados
+     'p_m': np.array([...]),    # array numpy com pressão balística média em Pa
+     'T': np.array([...]),      # array numpy com temperatura GPS em Kelvin
+     'x_p':np.array([...]),     # array numpy com posição do projétil em metros (no momento inicial x_p==0)
+     'v_p': np.array([...]),    # array numpy com velocidade do projétil em m/s (no momento inicial v_p==0)
+     'Q_pa': np.array([...]),   # numpy array com a energia total em J gasta na superação das forças de resistência à pressão atmosférica na frente do projétil
+     'Q_w': np.array([...]),    # array numpy com a energia total em J dada pelo GPS para aquecer o cano
+     'W_p': np.array([...]),    # numpy array com volume do projétil em m^3
+     'W_c': np.array([...]),    # numpy array com volume em m^3 ocupado pelo covolume GPS e pela fase condensada GPS
+     'T_w': np.array([...]),    # matriz numpy com temperatura média do cano em K
+     'k': np.array([...]),      # matriz numpy com expoentes adiabáticos GPS
+     'z_1': np.array([...]),    # array numpy com a espessura relativa do cofre queimado da amostra de pólvora nº 1
+     'psi_1': np.array([...]),  # numpy array com a massa relativa da pólvora queimado da amostra nº 1
+     'z_2': np.array([...]),    # numpy array com a espessura relativa do cofre queimado da amostra de pólvora nº 2
+     'psi_2': np.array([...]),  # array numpy com a massa relativa do pó queimado da amostra nº 2
+         ...                    # e assim por diante N vezes
+     'stop_reason': str,        # motivo para parar o cálculo ('t_max', 'steps_max', 'v_p', 'x_p', 'p_max')
+     'execution_time': float    # tempo gasto no cálculo, em segundos
 }
 ```
-Пример:
+Exemplo:
 ```python
 
 opts = get_options_sample()
@@ -238,65 +237,65 @@ print(result)
 }
 ```
 
-## Структура результатов газодинамической модели
+## Estrutura dos resultados do modelo dinâmico de gases
 
 
-В зависимости от результатов расчета, словарь может быть двух видов. Если в результате расчета произошла ошибка, то будет сформирован следующий словарь:
+Dependendo dos resultados do cálculo, o dicionário pode ser de dois tipos. Caso ocorra algum erro no cálculo, será gerado o seguinte dicionário:
 
 ```python
 {
-    'stop_reason': 'error',   # показывает, что в процессе расчета произошла ошибка
-    'error_message': '...',   # описание ошибки
-    'exception': Error('...'),# ссылка на саму ошибку (ее можно вызвать при помощи raise для трассировки) 
-    'execution_time': float   # время выполнения функции в секундах
+    'stop_reason': 'error',     # indica que ocorreu um erro durante o processo de cálculo
+     'error_message': '...',    # descrição do erro
+     'exception': Error('...'), # referência ao próprio erro (pode ser levantado usando raise para rastrear)
+     'execution_time': float    # tempo de execução da função em segundos
 }
 ```
 
-Пример:
+Exemplo:
 
 ```python
-result = ozvb_lagrange({})  # передаем пустой словарь
+result = ozvb_lagrange({})  # passa um dicionário vazio
 print(result)
 >>> {
-    'stop_reason': 'error',
-    'error_message': 'В словаре opts обязательно должно быть поле "powders", в котором указываются параметры заряда. Пример правильного словаря opts можно получить из функции get_termo_options_sample()',
-    'exception': ValueError('В словаре opts обязательно должно быть поле "powders", в котором указываются параметры заряда. Пример правильного словаря opts можно получить из функции get_termo_options_sample()'),
+    'stop_reason': 'erro',
+    'error_message': 'O dicionário opts deve conter o campo "powders", que especifica os parâmetros de cobrança. Um exemplo de dicionário de opções correto pode ser obtido na função get_termo_options_sample()',
+    'exception': ValueError('O dicionário opts deve conter o campo "powders", que especifica os parâmetros de cobrança. Um exemplo de dicionário opts correto pode ser obtido na função get_termo_options_sample()'),
     'execution_time': 1.7400000047018693e-05
 }
 ```
 
 
-Если расчет прошел без ошибок, то словарь с результатами будет следующий:
+Se o cálculo ocorreu sem erros, o dicionário com os resultados será o seguinte:
 
 ```python
 {
-    'stop_reason': str,     # причина остановки расчета ('t_max', 'steps_max', 'v_p', 'x_p', 'p_max')
-    'execution_time': float,# время выполнения расчета в секундах
-    'layers': [             # список со словарями. В каждом словаре хранятся данные одного временного слоя
-        {                       # Словарь первого временного слоя. Слой состоит из N ячеек
-            't': 0.0,               # время временного слоя в секундах
-            'step_count': 0,         # номер шага по времени
-            'x': np.array([...]),    # numpy-массив координатами по длине узлов сетки в метрах, длина массива N+1
-            'u': np.array([...]),    # numpy-массив со скоростями узлов сетки в м/с, длина массива N+1
-            'T': np.array([...]),    # numpy-массив с температурами ГПС в ячейках в Кельвинах. Длина массива N
-            'rho': np.array([...]),  # numpy-массив с плотностями ГПС в ячейках в кг/м^3. Длина массива N
-            'p': np.array([...]),    # numpy-массив с давлениями ГПС в ячейках в Па. Длина массива N
-            'T_w':np.array([...]),   # numpy-массив с температурами стенок ствола в ячейках в Кельвинах. Длина массива N
-            'k':  np.array([...]),   # numpy-массив с показателями адиабаты ГПС в ячейках. Длина массива N
-            'z_1': np.array([...]),  # numpy-массив с относительными толщинами сгоревшего свода пороха навески №1 по ячейкам. Длина массива N 
-            'psi_1': np.array([...]),# numpy-массив с относительными массами сгоревшего пороха навески №1 по ячейкам. Длина массива N 
-            'z_2':np.array([...]),   # numpy-массив с относительными толщинами сгоревшего свода пороха навески №2 по ячейкам. Длина массива N 
-            'psi_2': np.array([...]),# numpy-массив с относительными массами сгоревшего пороха навески №2 по ячейкам. Длина массива N 
-            ... # и так по всем навескам
+    'stop_reason': str,         # motivo para parar o cálculo ('t_max', 'steps_max', 'v_p', 'x_p', 'p_max')
+    'execution_time': float,    # tempo de execução do cálculo em segundos
+    'layers': [                 # lista com dicionários. Cada dicionário armazena dados de uma camada de tempo
+        {                       # Dicionário da primeira camada temporária. A camada consiste em N células
+            't': 0,0,           # tempo da camada de tempo em segundos
+            'step_count': 0,    # número do passo de tempo
+            'x': np.array([...]), # array numpy de coordenadas ao longo do comprimento dos nós da grade em metros, comprimento do array N+1
+            'u': np.array([...]), # array numpy com velocidades do nó da grade em m/s, comprimento do array N+1
+            'T': np.array([...]), # array numpy com temperaturas GPS em células em Kelvin. Comprimento da matriz N
+            'rho': np.array([...]), # array numpy com densidades GPS em células em kg/m^3. Comprimento da matriz N
+            'p': np.array([...]),   # array numpy com pressões GPS em células em Pa. Comprimento da matriz N
+            'T_w':np.array([...]),  # matriz numpy com temperaturas da parede do cano em células em Kelvin. Comprimento da matriz N
+            'k': np.array([...]),   # array numpy com expoentes adiabáticos GPS nas células. Comprimento da matriz N
+            'z_1': np.array([...]), # numpy array com as espessuras relativas do cofre queimado da amostra de pólvora nº 1 por célula. Comprimento da matriz N
+            'psi_1': np.array([...]),# numpy array com as massas relativas da pólvora queimado da amostra nº 1 por células. Comprimento da matriz N
+            'z_2':np.array([...]),  # numpy array com as espessuras relativas do cofre queimado da amostra de pólvora nº 2 por célula. Comprimento da matriz N
+            'psi_2': np.array([...]),# numpy array com as massas relativas da pólvora queimado da amostra nº 2 por células. Comprimento da matriz N
+            ... # e assim por diante para todas as amostras
         },
-        {...},                 # Словарь второго временного слоя. Слой состоит из N ячеек
-        {...},                 # Словарь третьего временного слоя. Слой состоит из N ячеек
-        ...,                   № и т.д.
-    ]     # конец списка 'layers'
+        {...}, # Dicionário da segunda camada de tempo. A camada consiste em N células
+        {...}, # Dicionário da terceira camada de tempo. A camada consiste em N células
+        ...,                   e etc.
+    ]     # fim da lista de 'layers'
 }
 ```
 
-Пример:
+Exemplo:
 
 ```python
 opts = get_options_sample()
@@ -341,9 +340,9 @@ print(result)
 }
 ```
 
-## Дополнительные функции
+## Funções adicionais
 
-В библиотеке также есть несколько дополнительных функций, описание к которым есть в их [документации](https://devman.org/qna/13/chto-takoe-docstring-s-chem-ego-edjat/):
+A biblioteca também possui diversas funções adicionais, cuja descrição está em sua [documentação](https://devman.org/qna/13/chto-takoe-docstring-s-chem-ego-edjat/):
 
 ```python
 from pyballistics import get_full_options, get_db_powder, get_powder_names
