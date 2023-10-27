@@ -100,7 +100,7 @@ O dicionário de entrada consiste nos seguintes elementos de “nível superior�
     - ```'phi_1'``` - coeficiente que leva em consideração a força de atrito no rifle (participa da fórmula de cálculo do coeficiente de massa fictícia do projétil).
     - ```'p_0'``` - pressão de reforço, Pa.
     - ```'T_0'```(*opcional*) - temperatura inicial, K (*valor padrão 293,15 K*).
-    - ```'n_S'```(*opcional*) - coeficiente para levar em consideração a área de estrias (*valor padrão 1). A área da seção transversal é calculada usando a fórmula S = n_S pi d^2/4.
+    - ```'n_S'```(*opcional*) - coeficiente para levar em consideração a área de estrias (*valor padrão 1*). A área da seção transversal é calculada usando a fórmula S = n_S pi d^2/4.
     
 
  - ```'powders'``` - **seção obrigatória**. Esta seção contém uma [lista](https://pythonworld.ru/tipy-dannyx-v-python/spiski-list-funkcii-i-metody-spiskov.html) com dados sobre as amostras de pólvora que compõem a carga do propelente . **Deve ter pelo menos um elemento**. Cada elemento da lista é responsável por seu próprio link e também é um dicionário com os seguintes elementos:
