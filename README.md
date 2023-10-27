@@ -1,7 +1,7 @@
 # PyBallistics
 Biblioteca Python para resolver o OZVB em formulações termodinâmicas e gasodinâmicas.
 
-## Установка
+## Instalação
 Você pode instalar a biblioteca através do gerenciador de pacotes [pip](https://en.wikipedia.org/wiki/Pip_(package_manager)). Para fazer isso, basta executar o comando no console
 
 ```
